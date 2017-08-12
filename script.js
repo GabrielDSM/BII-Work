@@ -1,4 +1,4 @@
-d3.json('datatest.json', function (data) {
+d3.json('testingdata.json', function (data) {
     // var lineChart2 = dc.lineChart("#dc-line-chart-2"); //dc = d3 & crossfilter interface to make it easier to graph
     var volumeChart = dc.barChart('#monthly-volume-chart');
     var tester = crossfilter(data);

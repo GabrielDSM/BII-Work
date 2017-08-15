@@ -1,4 +1,4 @@
-d3.json('testingdata.json', function (data) {
+d3.json('datatest.json', function (data) {
     // var lineChart2 = dc.lineChart("#dc-line-chart-2"); //dc = d3 & crossfilter interface to make it easier to graph
     var volumeChart = dc.barChart('#monthly-volume-chart');
     var tester = crossfilter(data);
@@ -25,20 +25,18 @@ d3.json('testingdata.json', function (data) {
     // three reduce functions to use for plotting
     function retrieveAdd(attr) {
         return function(p, v) {
-            ++p.count;
-            p.freq += +v[attr];
-            return p;
+            freq = +v[attr];
+            return freq;
         };
     }
     function retrieveRemove(attr) {
         return function(p, v) {
-            --p.count;
-            p.freq -= +v[attr];
-            return p;
+            freq = 0;
+            return freq;
         };
     }
     function retrieveInit() {
-        return {count: 0, freq: 0};
+        return freq = 0;
     }
 
 
@@ -69,8 +67,11 @@ d3.json('testingdata.json', function (data) {
     } */
 
     var groupArray = new Array();
+    var mutationArray = new Array();
+    mutationArray.push('date');
     for (var i = 0; i < d3.keys(data[0]).length; i++) {
         if (i != 0 && i != 22  && i != 23) {
+            mutationArray.push(d3.keys(data[0])[i]);
             groupArray.push(byMonth.group().reduce(retrieveAdd(d3.keys(data[0])[i]), retrieveRemove(d3.keys(data[0])[i]), retrieveInit));
         }
     }
@@ -156,141 +157,83 @@ d3.json('testingdata.json', function (data) {
     // attemp at generalizing ther line chart declarations for the composite chart
     // does not currently contain line labels and nor should it contain differing line colors
     var lineChartArray = new Array();
-    for (var plotGroup in groupArray) {
+    /*for (var plotGroup in groupArray) {
         var tempLineChart = dc.lineChart(compChart);
         tempLineChart.group(plotGroup)
-            .valueAccessor(function (d) {
-                return d.value.freq;
-            })
         lineChartArray.push(tempLineChart);
+    }*/
+    for (var i = 0; i < mutationArray.length; i++) {
+        if (i != 0) {
+            lineChartArray.push(dc.lineChart(compChart).group(groupArray[i], mutationArray[i]));
+        }
     }
+
+    console.log(lineChartArray);
+
 
     compChart.compose([
         dc.lineChart(compChart)
             .colors('magenta')
-            .group(V81AGroup, 'V81A')
-            .valueAccessor(function (d) {
-                return d.value.freq;
-            }),
+            .group(V81AGroup, 'V81A'),
         dc.lineChart(compChart)
-            .group(G77RGroup, 'G77R')
-            .valueAccessor(function (d) {
-                return d.value.freq;
-            }),
+            .group(G77RGroup, 'G77R'),
         dc.lineChart(compChart)
             .colors('red')
-            .group(I188TGroup, 'I188T')
-            .valueAccessor(function (d) {
-                return d.value.freq;
-            }),
+            .group(I188TGroup, 'I188T'),
         dc.lineChart(compChart)
             .colors('brown')
-            .group(K260RGroup, 'K260R')
-            .valueAccessor(function (d) {
-                return d.value.freq;
-            }),
+            .group(K260RGroup, 'K260R'),
         dc.lineChart(compChart)
             .colors('orange')
-            .group(K469NGroup, 'K469N')
-            .valueAccessor(function (d) {
-                return d.value.freq;
-            }),
+            .group(K469NGroup, 'K469N'),
         dc.lineChart(compChart)
             .colors('green')
-            .group(L127FGroup, 'L127F')
-            .valueAccessor(function (d) {
-                return d.value.freq;
-            }),
+            .group(L127FGroup, 'L127F'),
         dc.lineChart(compChart)
             .colors('purple')
-            .group(V453AGroup, 'V453A')
-            .valueAccessor(function (d) {
-                return d.value.freq;
-            }),
+            .group(V453AGroup, 'V453A'),
         dc.lineChart(compChart)
             .colors('pink')
-            .group(I314MGroup, 'I314M')
-            .valueAccessor(function (d) {
-                return d.value.freq;
-            }),
+            .group(I314MGroup, 'I314M'),
         dc.lineChart(compChart)
             .colors('yellow')
-            .group(I34VGroup, 'I34V')
-            .valueAccessor(function (d) {
-                return d.value.freq;
-            }),
+            .group(I34VGroup, 'I34V'),
         dc.lineChart(compChart)
             .colors('teal')
-            .group(V13IGroup, 'V13I')
-            .valueAccessor(function (d) {
-                return d.value.freq;
-            }),
+            .group(V13IGroup, 'V13I'),
         dc.lineChart(compChart)
             .colors('olive')
-            .group(V264IGroup, 'V264I')
-            .valueAccessor(function (d) {
-                return d.value.freq;
-            }),
+            .group(V264IGroup, 'V264I'),
         dc.lineChart(compChart)
             .colors('cyan')
-            .group(N270KGroup, 'N270K')
-            .valueAccessor(function (d) {
-                return d.value.freq;
-            }),
+            .group(N270KGroup, 'N270K'),
         dc.lineChart(compChart)
             .colors('crimson')
-            .group(I321VGroup, 'I321V')
-            .valueAccessor(function (d) {
-                return d.value.freq;
-            }),
+            .group(I321VGroup, 'I321V'),
         dc.lineChart(compChart)
             .colors('gray')
-            .group(N248DGroup, 'N248D')
-            .valueAccessor(function (d) {
-                return d.value.freq;
-            }),
+            .group(N248DGroup, 'N248D'),
         dc.lineChart(compChart)
             .colors('maroon')
-            .group(N44SGroup, 'N44S')
-            .valueAccessor(function (d) {
-                return d.value.freq;
-            }),
+            .group(N44SGroup, 'N44S'),
         dc.lineChart(compChart)
             .colors('turquoise')
-            .group(L40IGroup, 'L40I')
-            .valueAccessor(function (d) {
-                return d.value.freq;
-            }),
+            .group(L40IGroup, 'L40I'),
         dc.lineChart(compChart)
             .colors('tan')
-            .group(N200SGroup, 'N200S')
-            .valueAccessor(function (d) {
-                return d.value.freq;
-            }),
+            .group(N200SGroup, 'N200S'),
         dc.lineChart(compChart)
             .colors('violet')
-            .group(K432EGroup, 'K432E')
-            .valueAccessor(function (d) {
-                return d.value.freq;
-            }),
+            .group(K432EGroup, 'K432E'),
         dc.lineChart(compChart)
             .colors('indigo')
-            .group(N386KGroup, 'N386K')
-            .valueAccessor(function (d) {
-                return d.value.freq;
-            }),
+            .group(N386KGroup, 'N386K'),
         dc.lineChart(compChart)
             .colors('limegreen')
-            .group(N369KGroup, 'N369K')
-            .valueAccessor(function (d) {
-                return d.value.freq;
-            }),
+            .group(N369KGroup, 'N369K'),
         dc.lineChart(compChart)
             .colors('royalblue')
             .group(V241IGroup, 'V241I')
-            .valueAccessor(function (d) {
-                return d.value.freq;
-            })
     ])
         .dimension(byMonth)
         .width(990)
@@ -333,9 +276,9 @@ d3.json('testingdata.json', function (data) {
         return Math.ceil(numOfDiffMuts)/100;
     });
 
-    volumeChart.width(1137)
+    volumeChart.width(966)
         .height(100)
-        .margins({top: 0, right: 20, bottom: 20, left: 206})
+        .margins({top: 20, right: 25, bottom: 20, left: 30})
         .dimension(byMonth)
         .group(volumeByMonthGroup)
         .centerBar(false)
@@ -349,9 +292,21 @@ d3.json('testingdata.json', function (data) {
     volumeChart.y(d3.scale.linear().domain([13,16]));
     volumeChart.yAxis().ticks(0);
 
+    var valueTable = dc.dataTable('.dc-data-table');
+    valueTable.dimension(byDate)
+        .group(function (d){
+            var format = d3.format('02d');
+            return d.dd.getFullYear() + '/' + format((d.dd.getMonth() + 1))
+        })
+        .size(10)
+        .columns(mutationArray)
+        .order(d3.ascending)
+        .on('renderlet', function(table) {
+            table.selectAll('.dc-table-group').classed('info', true)
+        });
+
     dc.renderAll();
 });
-
 
 
 

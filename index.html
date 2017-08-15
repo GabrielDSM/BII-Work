@@ -4,23 +4,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" href="bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="colorbrewer.css">
-    <link rel="stylesheet" type="text/css" href="dc.min.css">
+    <link rel="stylesheet" type="text/css" href="/Test area/dc/web/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/Test area/dc/web/css/colorbrewer.css">
+    <link rel="stylesheet" type="text/css" href="/Test area/dc/web/css/dc.min.css">
     <title>An empty page</title>
-    <script type="text/javascript" src="crossfilter.min.js"></script>
-    <script type="text/javascript" src="d3.js"></script>
-    <script type="text/javascript" src="dc.js"></script>
+    <script type="text/javascript" src="/Test area/crossfilter2/crossfilter.min.js"></script>
+    <script type="text/javascript" src="/Test area/d3/d3.js"></script>
+    <script type="text/javascript" src="/Test area/dc/dc.js"></script>
     <script src="script.js"></script>
 </head>
 <body>
-    <div class="row">
+    <div class="row" style="width:990px; margin:0 auto;">
         <div id='dc-composite' class="dc-chart">
-            <strong> &emsp;&ensp;&ensp; Test Compsite Chart</strong>
         </div>
     </div>
-    <div class="row">
+
+    <div class="row" style="width:990px; margin:0 auto;">
         <div id='monthly-volume-chart' class="dc-chart"></div>
+    </div>
+
+    <div class="row">
+        <div id='data-tabel' style="width:990px; margin:0 auto;">
+            <table class = "table table-hover dc-data-table dc-chart"></table>
+            <strong>Test Data Table</strong>
+        </div>
     </div>
 </body>
 </html>

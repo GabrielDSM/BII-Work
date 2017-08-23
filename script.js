@@ -1,22 +1,22 @@
-d3.json('datatest.json', function (data) {
+d3.json('newDatatest2.json', function (data) {
     // var lineChart2 = dc.lineChart("#dc-line-chart-2"); //dc = d3 & crossfilter interface to make it easier to graph
     var volumeChart = dc.barChart('#monthly-volume-chart');
-    var tester = crossfilter(data);
+    var dataCrossfilter = crossfilter(data);
 
-    var dateFormat = d3.time.format('%d/%m/%Y');
+    var dateFormat = d3.time.format('%Y%m%d');
     var numberFormat = d3.format('.2f');
 
     data.forEach(function (d) {
         d.dd = dateFormat.parse(d.date);
-        d.month = d3.time.month(d.dd); // pre-calculate month for better performance
+        d.month = d3.time.month.ceil(d.dd); // pre-calculate month for better performance
     });
 
-    console.log(tester.size());
-    var byDate = tester.dimension(function(d) {return d.date});
+    console.log(dataCrossfilter.size());
+    var byDate = dataCrossfilter.dimension(function(d) {return d.date});
     console.log(byDate);
     console.log();
 
-    var byMonth = tester.dimension(function(d) {return d.month});
+    var byMonth = dataCrossfilter.dimension(function(d) {return d.month});
     var grouped = byMonth.group();
     console.log(grouped.all());
 
@@ -25,7 +25,7 @@ d3.json('datatest.json', function (data) {
     // three reduce functions to use for plotting
     function retrieveAdd(attr) {
         return function(p, v) {
-            freq = +v[attr];
+            freq = +v[attr].freq;
             return freq;
         };
     }
@@ -68,10 +68,9 @@ d3.json('datatest.json', function (data) {
 
     var groupArray = new Array();
     var mutationArray = new Array();
-    mutationArray.push('date');
     for (var i = 0; i < d3.keys(data[0]).length; i++) {
-        if (i != 0 && i != 22  && i != 23) {
-            mutationArray.push(d3.keys(data[0])[i]);
+        if (i != 0 && i != 22  && i != 23 && i != 24) {
+            mutationArray.push(String(d3.keys(data[0])[i]));
             groupArray.push(byMonth.group().reduce(retrieveAdd(d3.keys(data[0])[i]), retrieveRemove(d3.keys(data[0])[i]), retrieveInit));
         }
     }
@@ -148,7 +147,7 @@ d3.json('datatest.json', function (data) {
     //
     */
 
-    console.log(V453AGroup.all()); // tester log
+    console.log(V453AGroup.all()); // dataCrossfilter log
 
     // Current position : Managed to declare the groups (non-hardcoded) ie based on the given file and not dependent on being off the testing data
     // cuurent predicament : need to figure out how im going to declare the dc.line-chart inside the compose.
@@ -268,9 +267,9 @@ d3.json('datatest.json', function (data) {
     var volumeByMonthGroup = byMonth.group().reduceSum(function (d) {
         var numOfDiffMuts = 0; // per month
         for (var i = 0; i < d3.keys(d).length; i++) {
-            if (i != 0 && i != 22  && i != 23) {
+            if (i != 0 && i != 22  && i != 23 && i != 24) {
                 // console.log(d[d3.keys(d)[i]]);
-                numOfDiffMuts += d[d3.keys(d)[i]];
+                numOfDiffMuts += d[d3.keys(d)[i]].freq;
             }
         }
         return Math.ceil(numOfDiffMuts)/100;
@@ -292,50 +291,107 @@ d3.json('datatest.json', function (data) {
     volumeChart.y(d3.scale.linear().domain([13,16]));
     volumeChart.yAxis().ticks(0);
 
+    /*var counter = 0;
     var valueTable = dc.dataTable('.dc-data-table');
-    valueTable.dimension(byDate)
+    valueTable.dimension(byMonth)
         .group(function (d){
             var format = d3.format('02d');
-            return d.dd.getFullYear() + '/' + format((d.dd.getMonth() + 1))
+            return d.dd.getFullYear() + '/' + d.dd.getMonth();
         })
-        .size(10)
-        .columns(mutationArray)
+        .size(17)
+        .columns([
+
+            {
+                label: 'V81A occurences',
+                format: function(d) {
+                    return +d.V81A.numOcc;
+                }
+            },
+            {
+                label: 'Month Total',
+                format: function(d) {
+                    return +d.V81A.totOcc;
+                }
+            },
+            {
+                label: 'Frequency',
+                format: function(d) {
+                    return +d.V81A.freq;
+                }
+            }
+        ]
+            [{  // trial 1
+                label: 'Mutations',
+                format: function() {
+                    return mutationArray
+                }
+            }]
+            [{ // trial 2
+                label: 'Mutations',
+                format: function(d) {
+                    var tempArray = new Array();
+                    var toReturn = d3.keys(d)[counter%23];
+                    counter++;
+                    for (var i = 1; i < d3.keys(d).length - 2; i++) {
+                        if (d[d3.keys(d)[i]] != 0) {
+                            tempArray.push(d3.keys(d)[i]);
+                        }
+                    }
+                    return tempArray;
+                }
+            }]
+        )
         .order(d3.ascending)
         .on('renderlet', function(table) {
             table.selectAll('.dc-table-group').classed('info', true)
         });
+    console.log(valueTable);*/
 
-    dc.renderAll();
-});
-
-
-
-// // Testing csv formatted data
-d3.csv('MutFreqs_E10CalRef.csv', function (data) {
-    var secondCrossfilter = crossfilter(data);
-    var dateFormat = d3.time.format('%m/%d/%Y');
-    var numberFormat = d3.format('.2f');
-
+    var valueTable = "<table><tr><th>Mutations</th><th>Occurrences</th><th>Total</th><th>Frequency (%)</th></tr>"; // header
     data.forEach(function (d) {
-        d.dd = dateFormat.parse(d.date);
-        d.month = d3.time.month(d.dd); // pre-calculate month for better performance
-        for (var i=0; i < d3.keys(d).length; i++) {
-            //d[d3.keys(d)[i]]) = +d[d3.keys(d)[i]]); // coerce frequency values to numbers
+        valueTable += "<tr class=\"dc-table-group info\"><td class=\"dc-table-label\" colspan=\"4\">Period: "
+                        + d3.time.format('%Y/%m')(d.dd) + "</td></tr>";
+        for (var i = 0; i < d3.keys(d).length; i++) {
+            if (i != 0 && i != 22  && i != 23 && i != 24) {
+                valueTable += "<tr><td>" + d3.keys(d)[i] + "</td><td>" + d[d3.keys(d)[i]].numOcc + "</td><td>"
+                                + d[d3.keys(d)[i]].totOcc + "</td><td>" + d[d3.keys(d)[i]].freq.toFixed(2) + "</td></tr>";
+            }
         }
     });
-
-    var byDate = secondCrossfilter.dimension(function(d) {return d.dd}); // crossfilter dimension based on date
-
-    console.log("below is output related to mutations associated to gisaid isolate EPI_ISL_207653, i.e. A/California/07/2009 with passage E10");
-    console.log("csv crossfilter: ", secondCrossfilter);
-    console.log("size: ", secondCrossfilter.size());
-    console.log("date dimension: ", byDate);
-    console.log("click on the 'Object' in the inspector below to see the values inside the first position of the date dimension")
-    console.log("first value of dimension: ", byDate.top(1));
-
+    valueTable += "</table>";
+    document.getElementById('table').innerHTML = valueTable;
 
     dc.renderAll();
 });
+
+
+
+// // // Testing csv formatted data
+// d3.csv('MutFreqs_E10CalRef.csv', function (data) {
+//     var secondCrossfilter = crossfilter(data);
+//     var dateFormat = d3.time.format('%m/%d/%Y');
+//     var numberFormat = d3.format('.2f');
+//
+//     data.forEach(function (d) {
+//         d.dd = dateFormat.parse(d.date);
+//         d.month = d3.time.month(d.dd); // pre-calculate month for better performance
+//         for (var i=0; i < d3.keys(d).length; i++) {
+//             //d[d3.keys(d)[i]]) = +d[d3.keys(d)[i]]); // coerce frequency values to numbers
+//         }
+//     });
+//
+//     var byDate = secondCrossfilter.dimension(function(d) {return d.dd}); // crossfilter dimension based on date
+//
+//     console.log("below is output related to mutations associated to gisaid isolate EPI_ISL_207653, i.e. A/California/07/2009 with passage E10");
+//     console.log("csv crossfilter: ", secondCrossfilter);
+//     console.log("size: ", secondCrossfilter.size());
+//     console.log("date dimension: ", byDate);
+//     console.log("click on the 'Object' in the inspector below to see the values inside the first position of the date dimension")
+//     console.log("first value of dimension: ", byDate.top(1));
+//
+//
+//     dc.renderAll();
+// });
 
 
 //NASDAQ Chart

@@ -1,6 +1,11 @@
+var V241IGroup;
+var volumeChart;
+var compChart;
+window.dataRef;
+
 d3.json('newDatatest2.json', function (data) {
     // var lineChart2 = dc.lineChart("#dc-line-chart-2"); //dc = d3 & crossfilter interface to make it easier to graph
-    var volumeChart = dc.barChart('#monthly-volume-chart');
+    volumeChart = dc.barChart('#monthly-volume-chart');
     var dataCrossfilter = crossfilter(data);
 
     var dateFormat = d3.time.format('%Y%m%d');
@@ -97,7 +102,7 @@ d3.json('newDatatest2.json', function (data) {
     var K432EGroup = byMonth.group().reduce(retrieveAdd('K432E'), retrieveRemove('K432E'), retrieveInit);
     var N386KGroup = byMonth.group().reduce(retrieveAdd('N386K'), retrieveRemove('N386K'), retrieveInit);
     var N369KGroup = byMonth.group().reduce(retrieveAdd('N369K'), retrieveRemove('N369K'), retrieveInit);
-    var V241IGroup = byMonth.group().reduce(retrieveAdd('V241I'), retrieveRemove('V241I'), retrieveInit);
+    V241IGroup = byMonth.group().reduce(retrieveAdd('V241I'), retrieveRemove('V241I'), retrieveInit);
 
     /* lineChart2
     //     //.renderArea(true)
@@ -151,7 +156,7 @@ d3.json('newDatatest2.json', function (data) {
 
     // Current position : Managed to declare the groups (non-hardcoded) ie based on the given file and not dependent on being off the testing data
     // cuurent predicament : need to figure out how im going to declare the dc.line-chart inside the compose.
-    var compChart = dc.compositeChart('#dc-composite');
+    compChart = dc.compositeChart('#dc-composite');
 
     // attemp at generalizing ther line chart declarations for the composite chart
     // does not currently contain line labels and nor should it contain differing line colors
@@ -239,7 +244,7 @@ d3.json('newDatatest2.json', function (data) {
         .height(450)
         .transitionDuration(1000)
         .mouseZoomable(true)
-        .x(d3.time.scale().domain([new Date(2016, 01, 1), new Date(2017, 03, 31)]))
+        .x(d3.time.scale().domain([new Date(2015, 12, 1), new Date(2017, 03, 31)]))
         .round(d3.time.month.round)
         .xUnits(d3.time.months)
         .elasticY(true)
@@ -282,7 +287,7 @@ d3.json('newDatatest2.json', function (data) {
         .group(volumeByMonthGroup)
         .centerBar(false)
         .gap(-2.5) // bar spacing - 50 as currently ; 1 some touching some not ; -2 almost no gaps, -3 no gaps
-        .x(d3.time.scale().domain([new Date(2016, 01, 1), new Date(2017, 03, 31)]))
+        .x(d3.time.scale().domain([new Date(2015, 12, 1), new Date(2017, 03, 31)]))
         .round(d3.time.month.round)
         .alwaysUseRounding(true)
         .xUnits(d3.time.months)
@@ -347,6 +352,7 @@ d3.json('newDatatest2.json', function (data) {
         });
     console.log(valueTable);*/
 
+    // Generating static html table
     var valueTable = "<table><tr><th>Mutations</th><th>Occurrences</th><th>Total</th><th>Frequency (%)</th></tr>"; // header
     data.forEach(function (d) {
         valueTable += "<tr class=\"dc-table-group info\"><td class=\"dc-table-label\" colspan=\"4\">Period: "
@@ -361,9 +367,76 @@ d3.json('newDatatest2.json', function (data) {
     valueTable += "</table>";
     document.getElementById('table').innerHTML = valueTable;
 
+
+    window.dataRef = compChart.children()[0].data();
+
+    function redrawTable(dataRef) {
+        var valueTable = "<table><tr><th>Mutations</th><th>Occurrences</th><th>Total</th><th>Frequency (%)</th></tr>"; // header
+        data.forEach(function (d) {
+            var temp = window.dataRef;
+            for(var i = 0; i < temp[0].values.length; i++) {
+                if (d.dd.getTime() == temp[0].values[i].x.getTime()) {
+                    valueTable += "<tr class=\"dc-table-group info\"><td class=\"dc-table-label\" colspan=\"4\">Period: "
+                                    + d3.time.format('%Y/%m')(d.dd) + "</td></tr>";
+                    for (var i = 0; i < d3.keys(d).length; i++) {
+                        if (i != 0 && i != 22  && i != 23 && i != 24) {
+                            valueTable += "<tr><td>" + d3.keys(d)[i] + "</td><td>" + d[d3.keys(d)[i]].numOcc + "</td><td>"
+                                            + d[d3.keys(d)[i]].totOcc + "</td><td>" + d[d3.keys(d)[i]].freq.toFixed(2) + "</td></tr>";
+                        }
+                    }
+                }
+            }
+        });
+        valueTable += "</table>";
+        document.getElementById('table').innerHTML = valueTable;
+    }
+
+    const BARCHART = document.getElementById("monthly-volume-chart");
+
+    function d3MouseDown(e) {
+        var o = d3.event;
+        d3.event = e;
+        argumentz[0] = this.__data__;
+        try {
+            listener.apply(this, argumentz);
+        } finally {
+            d3.event = o;
+        }
+    }
+
+    function d3TouchStart(e) {
+        var o = d3.event;
+        d3.event = e;
+        argumentz[0] = this.__data__;
+        try {
+            listener.apply(this, argumentz);
+        } finally {
+            d3.event = o;
+        }
+    }
+
+    function multipleMouseDown() {
+        d3MouseDown;
+        redrawTable;
+    }
+
+    function multipleTouchStart() {
+        d3TouchStart;
+        redrawTable;
+    }
+
+
+    BARCHART.onclick = redrawTable;
+    BARCHART.onmousedown = multipleMouseDown;
+    BARCHART.ontouchstart = multipleTouchStart;
+    BARCHART.onchange = redrawTable;
+    BARCHART.onmouseup = redrawTable;
+    BARCHART.ontouchend = redrawTable;
+    BARCHART.onmouseenter = redrawTable;
+    BARCHART.onmouseleave = redrawTable;
+
     dc.renderAll();
 });
-
 
 
 // // // Testing csv formatted data

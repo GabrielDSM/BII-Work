@@ -354,16 +354,44 @@ d3.json('newDatatest2.json', function (data) {
 
     // Generating static html table
     var valueTable = "<table><tr><th>Mutations</th><th>Occurrences</th><th>Total</th><th>Frequency (%)</th></tr>"; // header
-    data.forEach(function (d) {
-        valueTable += "<tr class=\"dc-table-group info\"><td class=\"dc-table-label\" colspan=\"4\">Period: "
-                        + d3.time.format('%Y/%m')(d.dd) + "</td></tr>";
+    var tableBody = "";
+    var periodHeader = "";
+
+    var occurencesArray = new Array();
+    var totalArray = new Array();
+    var len;
+    data.forEach(function (d, index) {
+        if (index == 0) {
+            periodHeader += "<tr class=\"dc-table-group info\"><td class=\"dc-table-label\" colspan=\"4\">Period: "
+                            + d3.time.format('%Y/%m')(d.dd) + " - ";
+        }
+        if (index == data.length - 1) {
+            periodHeader += d3.time.format('%Y/%m')(d.dd) + "</td></tr>";
+        }
+
+        len = d3.keys(d).length;
+
         for (var i = 0; i < d3.keys(d).length; i++) {
             if (i != 0 && i != 22  && i != 23 && i != 24) {
-                valueTable += "<tr><td>" + d3.keys(d)[i] + "</td><td>" + d[d3.keys(d)[i]].numOcc + "</td><td>"
-                                + d[d3.keys(d)[i]].totOcc + "</td><td>" + d[d3.keys(d)[i]].freq.toFixed(2) + "</td></tr>";
+                if (index == 0) {
+                    occurencesArray.push(d[d3.keys(d)[i]].numOcc);
+                    totalArray.push(d[d3.keys(d)[i]].totOcc);
+                } else {
+                    occurencesArray[i - 1] += d[d3.keys(d)[i]].numOcc;
+                    totalArray[i - 1] += d[d3.keys(d)[i]].totOcc;
+                }
             }
         }
     });
+    for (var i = 0; i < len; i++) {
+        if (i != 0 && i != 22  && i != 23 && i != 24) {
+            var freq = occurencesArray[i - 1] / totalArray[i - 1];
+            tableBody += "<tr><td>" + d3.keys(data[0])[i] + "</td><td>" + occurencesArray[i - 1] + "</td><td>"
+                            + totalArray[i - 1] + "</td><td>" + freq.toFixed(3) + "</td></tr>";
+        }
+    }
+    valueTable += periodHeader;
+    valueTable += tableBody;
     valueTable += "</table>";
     document.getElementById('table').innerHTML = valueTable;
 
@@ -372,21 +400,52 @@ d3.json('newDatatest2.json', function (data) {
 
     function redrawTable(dataRef) {
         var valueTable = "<table><tr><th>Mutations</th><th>Occurrences</th><th>Total</th><th>Frequency (%)</th></tr>"; // header
-        data.forEach(function (d) {
-            var temp = window.dataRef;
-            for(var i = 0; i < temp[0].values.length; i++) {
-                if (d.dd.getTime() == temp[0].values[i].x.getTime()) {
-                    valueTable += "<tr class=\"dc-table-group info\"><td class=\"dc-table-label\" colspan=\"4\">Period: "
-                                    + d3.time.format('%Y/%m')(d.dd) + "</td></tr>";
-                    for (var i = 0; i < d3.keys(d).length; i++) {
-                        if (i != 0 && i != 22  && i != 23 && i != 24) {
-                            valueTable += "<tr><td>" + d3.keys(d)[i] + "</td><td>" + d[d3.keys(d)[i]].numOcc + "</td><td>"
-                                            + d[d3.keys(d)[i]].totOcc + "</td><td>" + d[d3.keys(d)[i]].freq.toFixed(2) + "</td></tr>";
+        var tableBody = "";
+        var periodHeader = "";
+        var periodLen = window.dataRef[0].values.length;
+
+        var len;
+
+        var occurencesArray = new Array();
+        var totalArray = new Array();
+
+
+        data.forEach(function (d, index) {
+            for(var i = 0; i < periodLen; i++) {
+                if (d.dd.getTime() == window.dataRef[0].values[i].x.getTime()) {
+                    if (i == 0) {
+                        periodHeader += "<tr class=\"dc-table-group info\"><td class=\"dc-table-label\" colspan=\"4\">Period: "
+                                        + d3.time.format('%Y/%m')(d.dd) + " - ";
+                    }
+                    if (i == periodLen - 1) {
+                        periodHeader += d3.time.format('%Y/%m')(d.dd) + "</td></tr>";
+                    }
+
+                    len = d3.keys(d).length;
+
+                    for (var j = 0; j < d3.keys(d).length; j++) {
+                        if (j != 0 && j != 22  && j != 23 && j != 24) {
+                            if (i == 0) {
+                                occurencesArray.push(d[d3.keys(d)[j]].numOcc);
+                                totalArray.push(d[d3.keys(d)[j]].totOcc);
+                            } else {
+                                occurencesArray[j - 1] += d[d3.keys(d)[j]].numOcc;
+                                totalArray[j - 1] += d[d3.keys(d)[j]].totOcc;
+                            }
                         }
                     }
                 }
             }
         });
+        for (var i = 0; i < len; i++) {
+            if (i != 0 && i != 22  && i != 23 && i != 24) {
+                var freq = occurencesArray[i - 1] / totalArray[i - 1];
+                tableBody += "<tr><td>" + d3.keys(data[0])[i] + "</td><td>" + occurencesArray[i - 1] + "</td><td>"
+                                + totalArray[i - 1] + "</td><td>" + freq.toFixed(3) + "</td></tr>";
+            }
+        }
+        valueTable += periodHeader;
+        valueTable += tableBody;
         valueTable += "</table>";
         document.getElementById('table').innerHTML = valueTable;
     }

@@ -3,12 +3,12 @@ var volumeChart;
 var compChart;
 window.dataRef;
 
-d3.json('newDatatest2.json', function (data) {
+d3.json('newDatatest.json', function (data) {
     // var lineChart2 = dc.lineChart("#dc-line-chart-2"); //dc = d3 & crossfilter interface to make it easier to graph
     volumeChart = dc.barChart('#monthly-volume-chart');
     var dataCrossfilter = crossfilter(data);
 
-    var dateFormat = d3.time.format('%Y%m%d');
+    var dateFormat = d3.time.format('%m/%d/%Y'); // '%m/%d/%Y'  ||  '%Y%m%d'
     var numberFormat = d3.format('.2f');
 
     data.forEach(function (d) {
@@ -16,21 +16,20 @@ d3.json('newDatatest2.json', function (data) {
         d.month = d3.time.month.ceil(d.dd); // pre-calculate month for better performance
     });
 
-    console.log(dataCrossfilter.size());
+//    console.log(dataCrossfilter.size());
     var byDate = dataCrossfilter.dimension(function(d) {return d.date});
-    console.log(byDate);
-    console.log();
+//    console.log(byDate);
 
     var byMonth = dataCrossfilter.dimension(function(d) {return d.month});
     var grouped = byMonth.group();
-    console.log(grouped.all());
+//    console.log(grouped.all());
 
-    console.log();
+//    console.log();
 
     // three reduce functions to use for plotting
     function retrieveAdd(attr) {
         return function(p, v) {
-            freq = +v[attr].freq;
+            freq = +v[attr].f;
             return freq;
         };
     }
@@ -71,7 +70,8 @@ d3.json('newDatatest2.json', function (data) {
         return numberOfMuts = 0;
     } */
 
-    var groupArray = new Array();
+    // correctly generates groups
+    /*var groupArray = new Array();
     var mutationArray = new Array();
     for (var i = 0; i < d3.keys(data[0]).length; i++) {
         if (i != 0 && i != 22  && i != 23 && i != 24) {
@@ -79,10 +79,10 @@ d3.json('newDatatest2.json', function (data) {
             groupArray.push(byMonth.group().reduce(retrieveAdd(d3.keys(data[0])[i]), retrieveRemove(d3.keys(data[0])[i]), retrieveInit));
         }
     }
-    console.log(groupArray);
+    console.log(groupArray);*/
 
     // All of these groups are now in the array above ^ (verified)
-    var V81AGroup = byMonth.group().reduce(retrieveAdd('V81A'), retrieveRemove('V81A'), retrieveInit);
+    /*var V81AGroup = byMonth.group().reduce(retrieveAdd('V81A'), retrieveRemove('V81A'), retrieveInit);
     var G77RGroup = byMonth.group().reduce(retrieveAdd('G77R'), retrieveRemove('G77R'), retrieveInit);
     var I188TGroup = byMonth.group().reduce(retrieveAdd('I188T'), retrieveRemove('I188T'), retrieveInit);
     var K260RGroup = byMonth.group().reduce(retrieveAdd('K260R'), retrieveRemove('K260R'), retrieveInit);
@@ -102,7 +102,18 @@ d3.json('newDatatest2.json', function (data) {
     var K432EGroup = byMonth.group().reduce(retrieveAdd('K432E'), retrieveRemove('K432E'), retrieveInit);
     var N386KGroup = byMonth.group().reduce(retrieveAdd('N386K'), retrieveRemove('N386K'), retrieveInit);
     var N369KGroup = byMonth.group().reduce(retrieveAdd('N369K'), retrieveRemove('N369K'), retrieveInit);
-    V241IGroup = byMonth.group().reduce(retrieveAdd('V241I'), retrieveRemove('V241I'), retrieveInit);
+    V241IGroup = byMonth.group().reduce(retrieveAdd('V241I'), retrieveRemove('V241I'), retrieveInit);*/
+
+    var E119GGroup = byMonth.group().reduce(retrieveAdd('E119G'), retrieveRemove('E119G'), retrieveInit);
+    // var E119VGroup = byMonth.group().reduce(retrieveAdd('E119V'), retrieveRemove('E119V'), retrieveInit);
+    var D199GGroup = byMonth.group().reduce(retrieveAdd('D199G'), retrieveRemove('D199G'), retrieveInit);
+    var I223KGroup = byMonth.group().reduce(retrieveAdd('I223K'), retrieveRemove('I223K'), retrieveInit);
+    var I223RGroup = byMonth.group().reduce(retrieveAdd('I223R'), retrieveRemove('I223R'), retrieveInit);
+    var I223VGroup = byMonth.group().reduce(retrieveAdd('I223V'), retrieveRemove('I223V'), retrieveInit);
+    var S247NGroup = byMonth.group().reduce(retrieveAdd('S247N'), retrieveRemove('S247N'), retrieveInit);
+    var H275YGroup = byMonth.group().reduce(retrieveAdd('H275Y'), retrieveRemove('H275Y'), retrieveInit);
+    var N295SGroup = byMonth.group().reduce(retrieveAdd('N295S'), retrieveRemove('N295S'), retrieveInit);
+
 
     /* lineChart2
     //     //.renderArea(true)
@@ -120,39 +131,39 @@ d3.json('newDatatest2.json', function (data) {
     //     .brushOn(false)
     //     .group(V81AGroup, 'V81A (hopefully)')
     //     .valueAccessor(function (d) {
-    //         return d.value.freq;
+    //         return d.value.f;
     //     })
     //     .stack(G77RGroup, 'G77R (hopefully)', function (d) {
-    //         return d.value.freq;
+    //         return d.value.f;
     //     })
     //     .stack(I188TGroup, 'I188T (hopefully)', function (d) {
-    //         return d.value.freq;
+    //         return d.value.f;
     //     })
     //     .stack(K260RGroup, 'K260R (hopefully)', function (d) {
-    //         return d.value.freq;
+    //         return d.value.f;
     //     })
     //     .stack(K469NGroup, 'K469N (hopefully)', function (d) {
-    //         return d.value.freq;
+    //         return d.value.f;
     //     })
     //     .stack(L127FGroup, 'L127F (hopefully)', function (d) {
-    //         return d.value.freq;
+    //         return d.value.f;
     //     })
     //     .stack(V453AGroup, 'V453A (hopefully)', function (d) {
-    //         return d.value.freq;
+    //         return d.value.f;
     //     })
     //     .stack(I314MGroup, 'I314M (hopefully)', function (d) {
-    //         return d.value.freq;
+    //         return d.value.f;
     //     })
     //     .stack(I34VGroup, 'I34V (hopefully)', function (d) {
-    //         return d.value.freq;
+    //         return d.value.f;
     //     })
     //     .stack(V13IGroup, 'V13I (hopefully)', function (d) {
-    //         return d.value.freq;
+    //         return d.value.f;
     //     })
     //
     */
 
-    console.log(V453AGroup.all()); // dataCrossfilter log
+    //console.log(V453AGroup.all()); // dataCrossfilter log
 
     // Current position : Managed to declare the groups (non-hardcoded) ie based on the given file and not dependent on being off the testing data
     // cuurent predicament : need to figure out how im going to declare the dc.line-chart inside the compose.
@@ -160,22 +171,22 @@ d3.json('newDatatest2.json', function (data) {
 
     // attemp at generalizing ther line chart declarations for the composite chart
     // does not currently contain line labels and nor should it contain differing line colors
-    var lineChartArray = new Array();
+    //var lineChartArray = new Array();
     /*for (var plotGroup in groupArray) {
         var tempLineChart = dc.lineChart(compChart);
         tempLineChart.group(plotGroup)
         lineChartArray.push(tempLineChart);
     }*/
-    for (var i = 0; i < mutationArray.length; i++) {
+    /*for (var i = 0; i < mutationArray.length; i++) {
         if (i != 0) {
             lineChartArray.push(dc.lineChart(compChart).group(groupArray[i], mutationArray[i]));
         }
-    }
+    }*/
 
-    console.log(lineChartArray);
+    //console.log(lineChartArray);
 
 
-    compChart.compose([
+    compChart.compose(/*[
         dc.lineChart(compChart)
             .colors('magenta')
             .group(V81AGroup, 'V81A'),
@@ -238,13 +249,39 @@ d3.json('newDatatest2.json', function (data) {
         dc.lineChart(compChart)
             .colors('royalblue')
             .group(V241IGroup, 'V241I')
-    ])
+        ]*/
+        [
+        dc.lineChart(compChart)
+            .colors('magenta')
+            .group(E119GGroup, 'E119G'),
+        dc.lineChart(compChart)
+            .colors('red')
+            .group(D199GGroup, 'D199G'),
+        dc.lineChart(compChart)
+            .colors('brown')
+            .group(I223KGroup, 'I223K'),
+        dc.lineChart(compChart)
+            .colors('orange')
+            .group(I223RGroup, 'I223R'),
+        dc.lineChart(compChart)
+            .colors('green')
+            .group(I223VGroup, 'I223V'),
+        dc.lineChart(compChart)
+            .colors('purple')
+            .group(S247NGroup, 'S247N'),
+        dc.lineChart(compChart)
+            .colors('crimson')
+            .group(H275YGroup, 'H275Y'),
+        dc.lineChart(compChart)
+            .colors('yellow')
+            .group(N295SGroup, 'N295S')
+        ])
         .dimension(byMonth)
         .width(990)
         .height(450)
         .transitionDuration(1000)
         .mouseZoomable(true)
-        .x(d3.time.scale().domain([new Date(2015, 12, 1), new Date(2017, 03, 31)]))
+        .x(d3.time.scale().domain([new Date(2009, 02, 1), new Date(2017, 04, 31)]))
         .round(d3.time.month.round)
         .xUnits(d3.time.months)
         .elasticY(true)
@@ -274,10 +311,10 @@ d3.json('newDatatest2.json', function (data) {
         for (var i = 0; i < d3.keys(d).length; i++) {
             if (i != 0 && i != 22  && i != 23 && i != 24) {
                 // console.log(d[d3.keys(d)[i]]);
-                numOfDiffMuts += d[d3.keys(d)[i]].freq;
+                numOfDiffMuts += d[d3.keys(d)[i]].n;
             }
         }
-        return Math.ceil(numOfDiffMuts)/100;
+        return numOfDiffMuts * 10;
     });
 
     volumeChart.width(966)
@@ -287,13 +324,13 @@ d3.json('newDatatest2.json', function (data) {
         .group(volumeByMonthGroup)
         .centerBar(false)
         .gap(-2.5) // bar spacing - 50 as currently ; 1 some touching some not ; -2 almost no gaps, -3 no gaps
-        .x(d3.time.scale().domain([new Date(2015, 12, 1), new Date(2017, 03, 31)]))
+        .x(d3.time.scale().domain([new Date(2009, 02, 1), new Date(2017, 04, 31)]))
         .round(d3.time.month.round)
         .alwaysUseRounding(true)
         .xUnits(d3.time.months)
         .elasticX(false);
 
-    volumeChart.y(d3.scale.linear().domain([13,16]));
+    volumeChart.y(d3.scale.linear().domain([0,50]));
     volumeChart.yAxis().ticks(0);
 
     /*var counter = 0;
@@ -309,19 +346,19 @@ d3.json('newDatatest2.json', function (data) {
             {
                 label: 'V81A occurences',
                 format: function(d) {
-                    return +d.V81A.numOcc;
+                    return +d.V81A.n;
                 }
             },
             {
                 label: 'Month Total',
                 format: function(d) {
-                    return +d.V81A.totOcc;
+                    return +d.V81A.t;
                 }
             },
             {
-                label: 'Frequency',
+                label: 'fuency',
                 format: function(d) {
-                    return +d.V81A.freq;
+                    return +d.V81A.f;
                 }
             }
         ]
@@ -353,10 +390,9 @@ d3.json('newDatatest2.json', function (data) {
     console.log(valueTable);*/
 
     // Generating static html table
-    var valueTable = "<table><tr><th>Mutations</th><th>Occurrences</th><th>Total</th><th>Frequency (%)</th></tr>"; // header
+    var valueTable = "<table><tr><th>Mutations</th><th>Occurrences</th><th>Total</th><th>frequency (%)</th></tr>"; // header
     var tableBody = "";
     var periodHeader = "";
-
     var occurencesArray = new Array();
     var totalArray = new Array();
     var len;
@@ -371,23 +407,23 @@ d3.json('newDatatest2.json', function (data) {
 
         len = d3.keys(d).length;
 
-        for (var i = 0; i < d3.keys(d).length; i++) {
-            if (i != 0 && i != 22  && i != 23 && i != 24) {
+        for (var i = 0; i < len; i++) {
+            if (i != 0 && i != len - 2 && i != len - 1) {
                 if (index == 0) {
-                    occurencesArray.push(d[d3.keys(d)[i]].numOcc);
-                    totalArray.push(d[d3.keys(d)[i]].totOcc);
+                    occurencesArray.push(d[d3.keys(d)[i]].n);
+                    totalArray.push(d[d3.keys(d)[i]].t);
                 } else {
-                    occurencesArray[i - 1] += d[d3.keys(d)[i]].numOcc;
-                    totalArray[i - 1] += d[d3.keys(d)[i]].totOcc;
+                    occurencesArray[i - 1] += d[d3.keys(d)[i]].n;
+                    totalArray[i - 1] += d[d3.keys(d)[i]].t;
                 }
             }
         }
     });
     for (var i = 0; i < len; i++) {
-        if (i != 0 && i != 22  && i != 23 && i != 24) {
-            var freq = occurencesArray[i - 1] / totalArray[i - 1];
+        if (i != 0 && i != len - 2 && i != len - 1) {
+            var f = (occurencesArray[i - 1] / totalArray[i - 1]) * 100;
             tableBody += "<tr><td>" + d3.keys(data[0])[i] + "</td><td>" + occurencesArray[i - 1] + "</td><td>"
-                            + totalArray[i - 1] + "</td><td>" + freq.toFixed(3) + "</td></tr>";
+                            + totalArray[i - 1] + "</td><td>" + f.toFixed(3) + "</td></tr>";
         }
     }
     valueTable += periodHeader;
@@ -395,11 +431,11 @@ d3.json('newDatatest2.json', function (data) {
     valueTable += "</table>";
     document.getElementById('table').innerHTML = valueTable;
 
-
+    // for updating html table
     window.dataRef = compChart.children()[0].data();
-
     function redrawTable(dataRef) {
-        var valueTable = "<table><tr><th>Mutations</th><th>Occurrences</th><th>Total</th><th>Frequency (%)</th></tr>"; // header
+        document.getElementById('table').innerHTML = "";
+        var valueTable = "<table><tr><th>Mutations</th><th>Occurrences</th><th>Total</th><th>frequency (%)</th></tr>"; // header
         var tableBody = "";
         var periodHeader = "";
         var periodLen = window.dataRef[0].values.length;
@@ -408,29 +444,32 @@ d3.json('newDatatest2.json', function (data) {
 
         var occurencesArray = new Array();
         var totalArray = new Array();
-
+        var tag = 0;
+        var tag2 = 0;
 
         data.forEach(function (d, index) {
             for(var i = 0; i < periodLen; i++) {
-                if (d.dd.getTime() == window.dataRef[0].values[i].x.getTime()) {
-                    if (i == 0) {
+                if (d.dd.getFullYear() == window.dataRef[0].values[i].x.getFullYear() && d.dd.getMonth() == window.dataRef[0].values[i].x.getMonth()) {
+                    if (i == 0 && tag == 0) {
                         periodHeader += "<tr class=\"dc-table-group info\"><td class=\"dc-table-label\" colspan=\"4\">Period: "
                                         + d3.time.format('%Y/%m')(d.dd) + " - ";
+                        tag = 1;
                     }
-                    if (i == periodLen - 1) {
-                        periodHeader += d3.time.format('%Y/%m')(d.dd) + "</td></tr>";
+                    if (i == periodLen - 1 && tag2 == 0) {
+                        //periodHeader += d3.time.format('%Y/%m')(d.dd) + "</td></tr>"; need to figure this out causing issues
+                        tag2 == 1;
                     }
 
                     len = d3.keys(d).length;
 
-                    for (var j = 0; j < d3.keys(d).length; j++) {
-                        if (j != 0 && j != 22  && j != 23 && j != 24) {
+                    for (var j = 0; j < len; j++) {
+                        if (j != 0 && j != len - 2 && j != len - 1) {
                             if (i == 0) {
-                                occurencesArray.push(d[d3.keys(d)[j]].numOcc);
-                                totalArray.push(d[d3.keys(d)[j]].totOcc);
+                                occurencesArray.push(d[d3.keys(d)[j]].n);
+                                totalArray.push(d[d3.keys(d)[j]].t);
                             } else {
-                                occurencesArray[j - 1] += d[d3.keys(d)[j]].numOcc;
-                                totalArray[j - 1] += d[d3.keys(d)[j]].totOcc;
+                                occurencesArray[j - 1] += d[d3.keys(d)[j]].n;
+                                totalArray[j - 1] += d[d3.keys(d)[j]].t;
                             }
                         }
                     }
@@ -438,8 +477,8 @@ d3.json('newDatatest2.json', function (data) {
             }
         });
         for (var i = 0; i < len; i++) {
-            if (i != 0 && i != 22  && i != 23 && i != 24) {
-                var freq = occurencesArray[i - 1] / totalArray[i - 1];
+            if (i != 0 && i != len - 2 && i != len - 1) {
+                var freq = (occurencesArray[i - 1] / totalArray[i - 1]) * 100;
                 tableBody += "<tr><td>" + d3.keys(data[0])[i] + "</td><td>" + occurencesArray[i - 1] + "</td><td>"
                                 + totalArray[i - 1] + "</td><td>" + freq.toFixed(3) + "</td></tr>";
             }
@@ -499,7 +538,7 @@ d3.json('newDatatest2.json', function (data) {
 
 
 // // // Testing csv formatted data
-// d3.csv('MutFreqs_E10CalRef.csv', function (data) {
+// d3.csv('Mutfs_E10CalRef.csv', function (data) {
 //     var secondCrossfilter = crossfilter(data);
 //     var dateFormat = d3.time.format('%m/%d/%Y');
 //     var numberFormat = d3.format('.2f');
@@ -508,7 +547,7 @@ d3.json('newDatatest2.json', function (data) {
 //         d.dd = dateFormat.parse(d.date);
 //         d.month = d3.time.month(d.dd); // pre-calculate month for better performance
 //         for (var i=0; i < d3.keys(d).length; i++) {
-//             //d[d3.keys(d)[i]]) = +d[d3.keys(d)[i]]); // coerce frequency values to numbers
+//             //d[d3.keys(d)[i]]) = +d[d3.keys(d)[i]]); // coerce fuency values to numbers
 //         }
 //     });
 //

@@ -309,12 +309,12 @@ d3.json('newDatatest.json', function (data) {
     var volumeByMonthGroup = byMonth.group().reduceSum(function (d) {
         var numOfDiffMuts = 0; // per month
         for (var i = 0; i < d3.keys(d).length; i++) {
-            if (i != 0 && i != 22  && i != 23 && i != 24) {
+            if (i != 0 && i != d3.keys(d).length - 1  && i != d3.keys(d).length - 2) {
                 // console.log(d[d3.keys(d)[i]]);
-                numOfDiffMuts += d[d3.keys(d)[i]].n;
+                numOfDiffMuts += +d[d3.keys(d)[i]].n;
             }
         }
-        return numOfDiffMuts * 10;
+        return numOfDiffMuts;
     });
 
     volumeChart.width(966)
@@ -329,9 +329,9 @@ d3.json('newDatatest.json', function (data) {
         .alwaysUseRounding(true)
         .xUnits(d3.time.months)
         .elasticX(false);
-
-    volumeChart.y(d3.scale.linear().domain([0,50]));
+    volumeChart.y(d3.scale.linear().domain([0,45]));
     volumeChart.yAxis().ticks(0);
+
 
     /*var counter = 0;
     var valueTable = dc.dataTable('.dc-data-table');
@@ -455,8 +455,8 @@ d3.json('newDatatest.json', function (data) {
                                         + d3.time.format('%Y/%m')(d.dd) + " - ";
                         tag = 1;
                     }
-                    if (i == periodLen - 1 && tag2 == 0) {
-                        //periodHeader += d3.time.format('%Y/%m')(d.dd) + "</td></tr>"; need to figure this out causing issues
+                    if (i == periodLen - 1) { //  && tag2 == 0
+                        periodHeader += d3.time.format('%Y/%m')(d.dd) + "</td></tr>"; //need to figure this out causing issues
                         tag2 == 1;
                     }
 
